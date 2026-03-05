@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodEX Town Stüdyo - Oynatıcı Paneli</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #E50914; --bg: #050505; --card: rgba(18, 18, 20, 0.6); --border: rgba(255,255,255,0.08); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); background-image: radial-gradient(circle at top right, rgba(229, 9, 20, 0.15), transparent 40%); color: #fff; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 60px 20px; position: relative; overflow-x: hidden; }
+        
+        .dashboard { background: var(--card); backdrop-filter: blur(40px); border: 1px solid var(--border); width: 100%; max-width: 800px; padding: 50px; border-radius: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); position: relative; z-index: 2; }
+        
+        .header { text-align: center; margin-bottom: 45px; }
+        .header h1 { color: #fff; font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+        .header h1 span { background: linear-gradient(90deg, #E50914, #ff4b4b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p { color: #888; font-size: 15px; font-weight: 500; }
+
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .full-width { grid-column: 1 / -1; }
+
+        .form-group label { display: block; margin-bottom: 10px; font-weight: 600; color: #aaa; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 16px 18px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: #fff; font-size: 15px; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .form-group input[type="color"] { padding: 4px 8px; height: 54px; cursor: pointer; }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); outline: none; background: rgba(0,0,0,0.6); box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.15); transform: translateY(-2px); }
+        .form-group input::placeholder, .form-group textarea::placeholder { color: #555; }
+        
+        .form-group textarea { resize: vertical; min-height: 160px; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 14px; line-height: 1.6; color: #4CAF50; }
+
+        .btn-generate { width: 100%; background: linear-gradient(135deg, #E50914 0%, #b8050e 100%); color: white; border: none; padding: 20px; font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px; transition: all 0.3s ease; margin-top: 30px; box-shadow: 0 10px 25px rgba(229, 9, 20, 0.4); display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-generate:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(229, 9, 20, 0.5); }
+        .btn-generate:active { transform: translateY(0); box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4); }
+
+        .output-box { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border); display: none; }
+        .output-box.show { display: block; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .output-box label { color: #fff; font-size: 20px; margin-bottom: 20px; display: block; text-align: center; font-weight: 800; }
+        .output-box textarea { width: 100%; height: 180px; background: rgba(0,0,0,0.8); color: #fff; border: 1px solid rgba(255,255,255,0.15); padding: 25px; border-radius: 16px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 14px; margin-bottom: 25px; line-height: 1.6; box-shadow: inset 0 5px 15px rgba(0,0,0,0.5); }
+        
+        .btn-copy { background: #fff; color: #000; border: none; padding: 18px 30px; font-size: 16px; font-weight: 800; border-radius: 12px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: block; width: 100%; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-copy:hover { background: #e0e0e0; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255,255,255,0.2); }
+        .btn-copy.success { background: #10B981; color: #fff; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4); }
+
+        @media (max-width: 768px) { 
+            .grid-layout { grid-template-columns: 1fr; gap: 20px; } 
+            .dashboard { padding: 35px 25px; border-radius: 20px; } 
+            body { padding: 30px 15px; }
+            .header h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="header">
+        <h1>CodEX <span>Studio</span></h1>
+        <p>Premium Korumalı Player Kodu Oluşturucu</p>
+    </div>
+
+    <div class="grid-layout">
+        <div class="form-group full-width">
+            <label>Tema Rengi</label>
+            <input type="color" id="themeColor" value="#E50914">
+        </div>
+        <div class="form-group full-width">
+            <label>Poster (Kapak Fotoğrafı Linki)</label>
+            <input type="text" id="posterSrc" placeholder="https://resim-linki.com/kapak.jpg">
+        </div>
+        <div class="form-group">
+            <label>Dublaj Linki (.m3u8 / .mp4)</label>
+            <input type="text" id="dubSrc" placeholder="https://sunucu.com/dublaj.m3u8">
+        </div>
+        <div class="form-group">
+            <label>Orijinal Dil Linki (.m3u8 / .mp4)</label>
+            <input type="text" id="subSrc" placeholder="https://sunucu.com/orijinal.m3u8">
+        </div>
+        <div class="form-group full-width">
+            <label>Altyazı Metni (WEBVTT)</label>
+            <textarea id="vttText" placeholder="WEBVTT&#10;&#10;00:00:01.000 --> 00:00:04.000&#10;CodEX'e hoş geldiniz..."></textarea>
+        </div>
+    </div>
+
+    <button class="btn-generate" onclick="generateCode()">
+        Player Kodunu Oluştur
+    </button>
+
+    <div class="output-box" id="outputArea">
+        <textarea id="resultCode" readonly></textarea>
+        <button class="btn-copy" id="copyBtn" onclick="copyCode()">Kodu Kopyala</button>
+    </div>
+</div>
+
+<script>
+    function generateCode() {
+        const themeColor = document.getElementById('themeColor').value;
+        const dubSrc = document.getElementById('dubSrc').value.trim();
+        const subSrc = document.getElementById('subSrc').value.trim();
+        const posterSrc = document.getElementById('posterSrc').value.trim();
+        const vttText = document.getElementById('vttText').value.trim();
+
+        if (!dubSrc && !subSrc) { 
+            alert("Lütfen en az bir video linki (Dublaj veya Orijinal) ekleyin!"); 
+            return; 
+        }
+
+        // ŞİFRESİZ DOĞRUDAN AKTARIM
+        let htmlCode = `<div class="codex-player" \n`;
+        if (dubSrc) htmlCode += `     data-video-dub="${dubSrc}" \n`;
+        if (subSrc) htmlCode += `     data-video-sub="${subSrc}" \n`;
+        if (posterSrc) htmlCode += `     data-poster="${posterSrc}" \n`;
+        if (themeColor !== "#e50914" && themeColor !== "#E50914") htmlCode += `     style="--theme: ${themeColor};"`;
+        htmlCode += `>\n`;
+
+        if (vttText) {
+            htmlCode += `  <script type="text/vtt" class="cx-subtitles">\n${vttText}\n  <\/script>\n`;
+        }
+        htmlCode += `</div>`;
+
+        document.getElementById('resultCode').value = htmlCode;
+        document.getElementById('outputArea').classList.add('show');
+        
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.innerText = "Kodu Kopyala";
+        copyBtn.classList.remove('success');
+        
+        setTimeout(() => {
+            document.getElementById('outputArea').scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }, 100);
+    }
+
+    function copyCode() {
+        const resultCode = document.getElementById('resultCode');
+        resultCode.select();
+        resultCode.setSelectionRange(0, 99999); 
+        navigator.clipboard.writeText(resultCode.value).then(() => {
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.innerText = "✓ Kopyalandı!";
+            copyBtn.classList.add('success');
+            setTimeout(() => { copyBtn.innerText = "Kodu Kopyala"; copyBtn.classList.remove('success'); }, 3000);
+        });
+    }
+</script>
+
+</body>
+</html>
+<style>
+  .blog-feeds, .post-title {display:none;}
+</style>

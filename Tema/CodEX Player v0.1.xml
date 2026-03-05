@@ -1,0 +1,1144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' expr:dir='data:blog.languageDirection' expr:lang='data:blog.locale' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+  <b:include data='blog' name='all-head-content'/>
+  <title><data:blog.pageTitle/></title>
+  
+  <script src='https://cdn.jsdelivr.net/npm/hls.js@latest'/>
+
+  <b:skin><![CDATA[
+    /* TAM SAYFA KUSURSUZ NETFLIX PLAYER - V23 (SADE VE KLASİK SÜRÜM) */
+    
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body { margin: 0; padding: 0; overflow-x: hidden; background: #000; }
+    
+    .codex-player-container {
+      position: relative; width: 100vw; aspect-ratio: 16 / 9; max-height: 100vh;
+      left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; 
+      background: #000; overflow: hidden; outline: none;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --theme: #E50914; 
+    }
+    
+    .codex-player-container:fullscreen, .codex-player-container:-webkit-full-screen {
+        width: 100vw !important; height: 100vh !important; max-height: none !important; border-radius: 0 !important; margin-top: 0 !important;
+        transform: none !important; left: 0 !important; max-width: none !important; margin: 0 !important;
+    }
+    
+    .cx-video { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; background: #000; pointer-events: none; }
+    .cx-overlay { position: absolute; top: 0; left: 0; width: 100%; height: calc(100% - 80px); z-index: 4; cursor: pointer; }
+
+    /* Bağımsız ve Kusursuz Kilit Tuşu */
+    .cx-lock-btn-top { position: absolute; top: 25px; left: 30px; background: rgba(20,20,20,0.6); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 12px; border-radius: 50%; transition: all 0.3s ease; opacity: 1; color: #fff; pointer-events: auto; backdrop-filter: blur(8px); z-index: 30; }
+    .cx-lock-btn-top svg { width: 22px; height: 22px; fill: #fff; transition: transform 0.3s ease; }
+    .cx-lock-btn-top:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
+
+    /* Kilit Modu Açıkken */
+    .codex-player-container.is-locked .cx-controls, 
+    .codex-player-container.is-locked .cx-center-play { display: none !important; opacity: 0 !important; pointer-events: none !important; }
+    .codex-player-container.is-locked .cx-lock-btn-top { opacity: 0.7; box-shadow: 0 0 15px rgba(0,0,0,0.8); }
+    .codex-player-container.is-locked .cx-lock-btn-top:hover { opacity: 1; }
+
+    /* AFK (Hareketsizlik) Durumu */
+    .codex-player-container.hide-controls .cx-controls,
+    .codex-player-container.hide-controls .cx-lock-btn-top { opacity: 0; pointer-events: none !important; }
+    .cx-desktop.hide-controls { cursor: none; }
+
+    .cx-ripple { position: absolute; top: 0; bottom: 0; width: 30%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); z-index: 5; pointer-events: none; opacity: 0; transform: scale(0.8); transition: opacity 0.4s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .cx-ripple.show { opacity: 1; transform: scale(1.5); }
+    .cx-ripple-left { left: 0; transform-origin: left center; }
+    .cx-ripple-right { right: 0; transform-origin: right center; }
+    
+    .cx-spinner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 64px; height: 64px; z-index: 6; pointer-events: none; opacity: 0; transition: opacity 0.3s ease; filter: drop-shadow(0 0 8px var(--theme)); }
+    .cx-spinner svg { animation: cx-rotate 2s linear infinite; width: 100%; height: 100%; }
+    .cx-spinner circle { stroke: var(--theme); stroke-width: 3.5; stroke-dasharray: 1, 200; stroke-dashoffset: 0; animation: cx-dash 1.5s ease-in-out infinite; stroke-linecap: round; fill: none; }
+    @keyframes cx-rotate { 100% { transform: rotate(360deg); } }
+    @keyframes cx-dash { 0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; } 50% { stroke-dasharray: 90, 200; stroke-dashoffset: -35px; } 100% { stroke-dasharray: 90, 200; stroke-dashoffset: -124px; } }
+    .codex-player-container.loading .cx-spinner { opacity: 1; }
+    .codex-player-container.loading .cx-center-play { display: none; }
+    
+    .cx-feedback { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 2rem; font-weight: 700; background: rgba(0,0,0,0.7); padding: 15px 30px; border-radius: 50px; z-index: 20; pointer-events: none; opacity: 0; transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); backdrop-filter: blur(4px); }
+    .cx-feedback.show { opacity: 1; transform: translateY(-50%) scale(1.1); }
+    .cx-feedback-left { left: 10%; } .cx-feedback-right { right: 10%; }
+    
+    .cx-center-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85px; height: 85px; background: rgba(0, 0, 0, 0.5); border: 2px solid rgba(255,255,255,0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 15; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); pointer-events: auto; cursor: pointer; backdrop-filter: blur(8px); }
+    .cx-center-play svg { width: 42px; height: 42px; fill: #fff; margin-left: 6px; transition: transform 0.3s ease; }
+    .cx-center-play:hover { background: rgba(255, 255, 255, 0.15); border-color: #fff; transform: translate(-50%, -50%) scale(1.05); }
+    .cx-center-play:hover svg { transform: scale(1.1); }
+    .codex-player-container:not(.paused) .cx-center-play { opacity: 0; pointer-events: none; transform: translate(-50%, -50%) scale(1.5); }
+
+    .cx-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%); display: flex; flex-direction: column; padding: 0 30px 25px 30px; opacity: 1; transition: opacity 0.4s ease, transform 0.4s ease; z-index: 20; pointer-events: auto; }
+
+    .cx-progress-wrapper { width: 100%; padding: 20px 0; cursor: pointer; display: flex; align-items: center; margin-bottom: -2px; position: relative; }
+    .cx-progress-container { width: 100%; height: 5px; background: rgba(255,255,255,0.25); transition: height 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; border-radius: 4px; overflow: visible; }
+    .cx-progress-bar { height: 100%; background: var(--theme); width: 0%; pointer-events: none; position: relative; border-radius: 4px; box-shadow: 0 0 10px var(--theme); transition: width 0.1s linear; }
+    .cx-progress-bar::after { content: ''; position: absolute; right: -8px; top: 50%; transform: translateY(-50%) scale(0); width: 18px; height: 18px; background: var(--theme); border-radius: 50%; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 8px rgba(0,0,0,0.6); }
+    
+    .cx-hover-time { position: absolute; bottom: 100%; left: 0; transform: translateX(-50%); background: rgba(20,20,20,0.9); color: #fff; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 6px; pointer-events: none; opacity: 0; transition: opacity 0.2s; margin-bottom: 8px; font-variant-numeric: tabular-nums; white-space: nowrap; border: 1px solid rgba(255,255,255,0.1); }
+    .cx-desktop .cx-progress-wrapper:hover .cx-hover-time { opacity: 1; }
+
+    .cx-buttons-row { display: flex; justify-content: space-between; width: 100%; align-items: center; }
+    .cx-left-btns, .cx-right-btns { display: flex; align-items: center; gap: 10px; position: relative; }
+
+    .cx-btn { position: relative; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 10px; border-radius: 50%; transition: background 0.2s ease, transform 0.2s ease; }
+    .cx-btn svg { width: 28px; height: 28px; fill: #fff; opacity: 0.85; transition: opacity 0.2s, fill 0.2s; }
+    
+    .cx-desktop .cx-btn[data-title]::after { content: attr(data-title); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: rgba(20, 20, 20, 0.95); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 50; }
+    .cx-desktop .cx-btn:hover::after { opacity: 1; transform: translateX(-50%) translateY(-8px); }
+
+    .cx-time { color: #ccc; font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; pointer-events: none; margin-left: 8px; }
+    .cx-volume-container { display: flex; align-items: center; gap: 8px; }
+    .cx-volume-slider { width: 0px; opacity: 0; cursor: pointer; accent-color: var(--theme); transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s; height: 4px; transform-origin: left; }
+    
+    .cx-popup-menu { position: absolute; bottom: 60px; background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 12px 0; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transform: translateY(15px) scale(0.95); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 30; max-height: 280px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+    .cx-popup-menu.open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+    .cx-popup-menu::-webkit-scrollbar { width: 6px; }
+    .cx-popup-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    
+    .cx-settings-menu { right: 30px; min-width: 170px; }
+    .cx-sub-menu { right: 75px; min-width: 170px; }
+    .cx-audio-menu { right: 120px; min-width: 170px; }
+    
+    .cx-settings-header { color: #999; font-size: 11px; text-transform: uppercase; font-weight: 700; padding: 6px 20px; letter-spacing: 1px; margin-top: 4px; margin-bottom: 4px; }
+    .cx-settings-item { padding: 10px 20px; color: #eee; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+    .cx-settings-item.active { color: #fff; font-weight: 700; background: rgba(255,255,255,0.05); }
+    .cx-settings-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--theme); }
+    
+    /* Saf Gölgeli Klasik Altyazı Görünümü (Arkaplan Kaldırıldı) */
+    .cx-custom-sub { position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%); width: 90%; text-align: center; pointer-events: none; z-index: 6; transition: bottom 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+    .codex-player-container.hide-controls .cx-custom-sub { bottom: 30px; }
+    .cx-custom-sub span { 
+        background: transparent; 
+        color: #fff; 
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+        font-size: clamp(1.4rem, 4vw, 2.4rem); 
+        font-weight: 500; 
+        text-shadow: 0 2px 4px rgba(0,0,0,1), 0 -2px 4px rgba(0,0,0,1), 2px 0 4px rgba(0,0,0,1), -2px 0 4px rgba(0,0,0,1); 
+        padding: 0; 
+        display: inline-block; 
+        line-height: 1.3; 
+    }
+    
+    video::-webkit-media-controls { display: none !important; }
+
+    @media (hover: hover) and (pointer: fine) {
+      .cx-progress-wrapper:hover .cx-progress-container { height: 8px; }
+      .cx-progress-wrapper:hover .cx-progress-bar::after { transform: translateY(-50%) scale(1); }
+      .cx-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.05); }
+      .cx-btn:hover svg { opacity: 1; }
+      .cx-volume-container:hover .cx-volume-slider { width: 85px; opacity: 1; margin-left: 5px; }
+      .cx-settings-item:hover:not(.active) { background: rgba(255,255,255,0.08); color: #fff; }
+    }
+
+    @media (max-width: 768px) {
+      .cx-controls { padding: 0 15px 15px 15px; }
+      .cx-time { margin-left: 2px; font-size: 13px; }
+      .cx-center-play { width: 65px; height: 65px; border-width: 1.5px; }
+      .cx-center-play svg { width: 32px; height: 32px; margin-left: 4px; }
+      .cx-progress-bar::after { transform: translateY(-50%) scale(1); width: 14px; height: 14px; } 
+      .cx-volume-container { display: none; }
+      .cx-custom-sub { bottom: 90px; width: 95%; } 
+      .codex-player-container.hide-controls .cx-custom-sub { bottom: 20px; }
+      
+      .cx-left-btns { gap: 4px; }
+      .cx-right-btns { gap: 2px; } 
+      .cx-btn { padding: 6px; border-radius: 8px; } 
+      .cx-btn svg { width: 24px; height: 24px; }
+      
+      .cx-settings-menu { right: 10px; bottom: 65px; }
+      .cx-sub-menu { right: 30px; bottom: 65px; }
+      .cx-audio-menu { right: 60px; bottom: 65px; }
+      .cx-lock-btn-top { display: none !important; } 
+    }
+  ]]></b:skin>
+</head>
+<body>
+
+  <b:section class='main' id='main' showaddelement='yes'>
+    <b:widget id='Blog1' locked='false' title='Blog Kayıtları' type='Blog' visible='true'>
+      <b:widget-settings>
+        <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+        <b:widget-setting name='commentLabel'>comments</b:widget-setting>
+        <b:widget-setting name='style.textcolor'>#ffffff</b:widget-setting>
+        <b:widget-setting name='showShareButtons'>false</b:widget-setting>
+        <b:widget-setting name='showCommentLink'>false</b:widget-setting>
+        <b:widget-setting name='style.urlcolor'>#ffffff</b:widget-setting>
+        <b:widget-setting name='postLocationLabel'>Location:</b:widget-setting>
+        <b:widget-setting name='showAuthor'>false</b:widget-setting>
+        <b:widget-setting name='style.linkcolor'>#ffffff</b:widget-setting>
+        <b:widget-setting name='style.unittype'>TextAndImage</b:widget-setting>
+        <b:widget-setting name='style.bgcolor'>#ffffff</b:widget-setting>
+        <b:widget-setting name='reactionsLabel'/>
+        <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+        <b:widget-setting name='style.layout'>1x1</b:widget-setting>
+        <b:widget-setting name='showLabels'>false</b:widget-setting>
+        <b:widget-setting name='showLocation'>false</b:widget-setting>
+        <b:widget-setting name='postLabelsLabel'>Labels:</b:widget-setting>
+        <b:widget-setting name='showTimestamp'>false</b:widget-setting>
+        <b:widget-setting name='postsPerAd'>1</b:widget-setting>
+        <b:widget-setting name='showBacklinks'>false</b:widget-setting>
+        <b:widget-setting name='style.bordercolor'>#ffffff</b:widget-setting>
+        <b:widget-setting name='showInlineAds'>false</b:widget-setting>
+        <b:widget-setting name='showReactions'>false</b:widget-setting>
+      </b:widget-settings>
+      <b:includable id='main' var='this'>
+  <div class='blog-posts hfeed container'>
+    <b:loop index='i' values='data:posts' var='post'>
+      <b:include data='post' name='postCommentsAndAd'/>
+    </b:loop>
+  </div>
+  <b:include cond='data:view.isMultipleItems' name='postPagination'/>
+  <b:include name='feedLinks'/>
+  <b:if cond='data:blog.isGoogleEverywhereLinkTooltipEnabled'>
+    <b:include name='tooltipCss'/>
+  </b:if>
+</b:includable>
+      <b:includable id='aboutPostAuthor'>
+  <div class='author-name'>
+    <a class='g-profile' expr:href='data:post.author.profileUrl' rel='author' title='author profile'>
+      <span>
+        <data:post.author.name/>
+      </span>
+    </a>
+  </div>
+  <div>
+    <span class='author-desc'>
+      <data:post.author.aboutMe/>
+    </span>
+  </div>
+</b:includable>
+      <b:includable id='addComments'>
+  <a expr:href='data:post.commentsUrl' expr:onclick='data:post.commentsUrlOnclick'>
+    <b:message name='messages.postAComment'/>
+  </a>
+</b:includable>
+      <b:includable id='commentAuthorAvatar'>
+  <div class='avatar-image-container'>
+    <img class='author-avatar' expr:src='data:comment.authorAvatarSrc' height='35' width='35'/>
+  </div>
+</b:includable>
+      <b:includable id='commentDeleteIcon' var='comment'>
+  <span expr:class='&quot;item-control &quot; + data:comment.adminClass'>
+    <b:if cond='data:showCmtPopup'>
+      <div class='goog-toggle-button'>
+        <div class='goog-inline-block comment-action-icon'/>
+      </div>
+    <b:else/>
+      <a class='comment-delete' expr:href='data:comment.deleteUrl' expr:title='data:messages.deleteComment'>
+        <img src='https://resources.blogblog.com/img/icon_delete13.gif'/>
+      </a>
+    </b:if>
+  </span>
+</b:includable>
+      <b:includable id='commentForm' var='post'>
+  <div class='comment-form'>
+    <a name='comment-form'/>
+    <h4 id='comment-post-message'><data:messages.postAComment/></h4>
+    <b:if cond='data:this.messages.blogComment != &quot;&quot;'>
+      <p><data:this.messages.blogComment/></p>
+    </b:if>
+    <b:include data='post' name='commentFormIframeSrc'/>
+    <iframe allowtransparency='allowtransparency' class='blogger-iframe-colorize blogger-comment-from-post' expr:height='data:cmtIframeInitialHeight ?: &quot;90px&quot;' frameborder='0' id='comment-editor' name='comment-editor' src='' width='100%'/>
+    <data:post.cmtfpIframe/>
+    <script type='text/javascript'>
+      BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;);
+    </script>
+  </div>
+</b:includable>
+      <b:includable id='commentFormIframeSrc' var='post'>
+  <a expr:href='data:post.commentFormIframeSrc' id='comment-editor-src'/>
+</b:includable>
+      <b:includable id='commentItem' var='comment'>
+  <div class='comment' expr:id='&quot;c&quot; + data:comment.id'>
+    <b:include cond='data:blog.enabledCommentProfileImages' name='commentAuthorAvatar'/>
+
+    <div class='comment-block'>
+      <div class='comment-author'>
+        <b:if cond='data:comment.authorUrl'>
+          <b:message name='messages.authorSaidWithLink'>
+            <b:param expr:value='data:comment.author' name='authorName'/>
+            <b:param expr:value='data:comment.authorUrl' name='authorUrl'/>
+          </b:message>
+        <b:else/>
+          <b:message name='messages.authorSaid'>
+            <b:param expr:value='data:comment.author' name='authorName'/>
+          </b:message>
+        </b:if>
+      </div>
+      <div expr:class='&quot;comment-body&quot; + (data:comment.isDeleted ? &quot; deleted&quot; : &quot;&quot;)'>
+        <data:comment.body/>
+      </div>
+      <div class='comment-footer'>
+        <span class='comment-timestamp'>
+          <a expr:href='data:comment.url' title='comment permalink'>
+            <data:comment.timestamp/>
+          </a>
+          <b:include data='comment' name='commentDeleteIcon'/>
+        </span>
+      </div>
+    </div>
+  </div>
+</b:includable>
+      <b:includable id='commentList' var='comments'>
+  <div id='comments-block'>
+    <b:loop values='data:comments' var='comment'>
+      <b:include data='comment' name='commentItem'/>
+    </b:loop>
+  </div>
+</b:includable>
+      <b:includable id='commentPicker' var='post'>
+  <b:if cond='data:post.showThreadedComments'>
+    <b:include data='post' name='threadedComments'/>
+  <b:else/>
+    <b:include data='post' name='comments'/>
+  </b:if>
+</b:includable>
+      <b:includable id='comments' var='post'>
+  <section expr:class='&quot;comments&quot; + (data:post.embedCommentForm ? &quot; embed&quot; : &quot;&quot;)' expr:data-num-comments='data:post.numberOfComments' id='comments'>
+    <a name='comments'/>
+    <b:if cond='data:post.allowComments'>
+
+      <b:include name='commentsTitle'/>
+
+      <div expr:id='data:widget.instanceId + &quot;_comments-block-wrapper&quot;'>
+        <b:include cond='data:post.comments' data='post.comments' name='commentList'/>
+      </div>
+
+      <b:if cond='data:post.commentPagingRequired'>
+        <div class='paging-control-container'>
+          <b:if cond='data:post.hasOlderLinks'>
+            <a expr:class='data:post.oldLinkClass' expr:href='data:post.oldestLinkUrl'>
+              <data:messages.oldest/>
+            </a>
+            <a expr:class='data:post.oldLinkClass' expr:href='data:post.olderLinkUrl'>
+              <data:messages.older/>
+            </a>
+          </b:if>
+
+          <span class='comment-range-text'>
+            <data:post.commentRangeText/>
+          </span>
+
+          <b:if cond='data:post.hasNewerLinks'>
+            <a expr:class='data:post.newLinkClass' expr:href='data:post.newerLinkUrl'>
+              <data:messages.newer/>
+            </a>
+            <a expr:class='data:post.newLinkClass' expr:href='data:post.newestLinkUrl'>
+              <data:messages.newest/>
+            </a>
+          </b:if>
+        </div>
+      </b:if>
+
+      <div class='footer'>
+        <b:if cond='data:post.embedCommentForm'>
+          <b:if cond='data:post.allowNewComments'>
+            <b:include data='post' name='commentForm'/>
+          <b:else/>
+            <data:post.noNewCommentsText/>
+          </b:if>
+        <b:else/>
+          <b:if cond='data:post.allowComments'>
+            <b:include data='post' name='addComments'/>
+          </b:if>
+        </b:if>
+      </div>
+    </b:if>
+    <b:if cond='data:showCmtPopup'>
+      <div id='comment-popup'>
+        <iframe allowtransparency='allowtransparency' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'>
+        </iframe>
+      </div>
+    </b:if>
+  </section>
+</b:includable>
+      <b:includable id='commentsTitle'>
+  <h3 class='title'><data:messages.comments/></h3>
+</b:includable>
+      <b:includable id='feedLinks'>
+  <b:if cond='!data:view.isPost'> <!-- Blog feed links -->
+    <b:if cond='data:feedLinks'>
+      <div class='blog-feeds'>
+        <b:include data='feedLinks' name='feedLinksBody'/>
+      </div>
+    </b:if>
+  <b:else/> <!--Post feed links -->
+    <div class='post-feeds'>
+      <b:loop values='data:posts' var='post'>
+        <b:if cond='data:post.allowComments and data:post.feedLinks'>
+          <b:include data='post.feedLinks' name='feedLinksBody'/>
+        </b:if>
+      </b:loop>
+    </div>
+  </b:if>
+</b:includable>
+      <b:includable id='feedLinksBody' var='links'>
+  <div class='feed-links'>
+  <data:messages.subscribeTo/>
+  <b:loop values='data:links' var='f'>
+     <a class='feed-link' expr:href='data:f.url' expr:type='data:f.mimeType' target='_blank'><data:f.name/> (<data:f.feedType/>)</a>
+  </b:loop>
+  </div>
+</b:includable>
+      <b:includable id='homePageLink'>
+  <a class='home-link' expr:href='data:blog.homepageUrl'>
+    <data:messages.home/>
+  </a>
+</b:includable>
+      <b:includable id='iframeComments' var='post'>
+  <!-- G+ comments, no longer available. The includable is retained for backwards-compatibility. -->
+</b:includable>
+      <b:includable id='inlineAd' var='post'>
+  <b:if cond='!data:view.isPreview'>
+    <b:if cond='data:this.adCode or data:this.adClientId or data:blog.adsenseClientId'>
+      <!-- Ad -->
+      <div class='inline-ad'>
+        <b:if cond='data:this.adCode != &quot;&quot;'>
+          <data:this.adCode/>
+        <b:else/>
+          <b:include cond='data:this.adClientId or data:blog.adsenseClientId' name='defaultAdUnit'/>
+        </b:if>
+      </div>
+    </b:if>
+  <b:else/>
+    <div class='inline-ad'>
+      <div class='inline-ad-placeholder'>
+        <span><b:message name='messages.adsGoHere'/></span>
+      </div>
+    </div>
+  </b:if>
+</b:includable>
+      <b:includable id='nextPageLink'>
+  <a class='blog-pager-older-link' expr:href='data:olderPageUrl' expr:id='data:widget.instanceId + &quot;_blog-pager-older-link&quot;' expr:title='data:messages.olderPosts'>
+    <data:messages.olderPosts/>
+  </a>
+</b:includable>
+      <b:includable id='post' var='post'>
+  <div class='post'>
+    <b:include data='post' name='postMeta'/>
+    <b:include data='post' name='postTitle'/>
+    <b:include name='headerByline'/>
+    <b:if cond='data:view.isSingleItem'>
+      <b:include data='post' name='postBody'/>
+    <b:else/>
+      <b:include data='post' name='postBodySnippet'/>
+      <b:include data='post' name='postJumpLink'/>
+    </b:if>
+    <b:include data='post' name='postFooter'/>
+  </div>
+</b:includable>
+      <b:includable id='postBody' var='post'>
+  <!-- If metaDescription is empty, use the post body as the schema.org description too, for G+/FB snippeting. -->
+  <div class='post-body entry-content float-container' expr:id='&quot;post-body-&quot; + data:post.id'>
+    <data:post.body/>
+  </div>
+</b:includable>
+      <b:includable id='postBodySnippet' var='post'>
+  <b:include data='post' name='postBody'/>
+</b:includable>
+      <b:includable id='postCommentsAndAd' var='post'>
+  <article class='post-outer-container'>
+    <!-- Post title and body -->
+    <div class='post-outer'>
+      <b:include data='post' name='post'/>
+    </div>
+
+    <!-- Comments -->
+    <b:include cond='data:view.isSingleItem' data='post' name='commentPicker'/>
+
+    <!-- Show ad inside post container, after comments, if single item. -->
+    <b:include cond='data:view.isSingleItem and data:post.includeAd' data='post' name='inlineAd'/>
+  </article>
+
+  <!-- Show ad outside post container (between posts) for feed pages. -->
+  <b:include cond='data:view.isMultipleItems and data:post.includeAd' data='post' name='inlineAd'/>
+</b:includable>
+      <b:includable id='postCommentsLink'>
+  <b:if cond='data:view.isMultipleItems'>
+    <span class='byline post-comment-link container'>
+      <b:include cond='data:post.commentSource != 1' name='commentsLink'/>
+    </span>
+  </b:if>
+</b:includable>
+      <b:includable id='postFooter' var='post'>
+  <div class='post-footer'>
+    <b:include name='footerBylines'/>
+    <b:include data='post' name='postFooterAuthorProfile'/>
+  </div>
+</b:includable>
+      <b:includable id='postFooterAuthorProfile' var='post'>
+  <b:if cond='data:post.author.aboutMe and data:view.isPost'>
+    <div class='author-profile'>
+      <b:if cond='data:post.author.authorPhoto.url'>
+        <img class='author-image' expr:src='data:post.author.authorPhoto.url' width='50px'/>
+        <div class='author-about'>
+          <b:include data='post' name='aboutPostAuthor'/>
+        </div>
+      <b:else/>
+        <b:include data='post' name='aboutPostAuthor'/>
+      </b:if>
+    </div>
+  </b:if>
+</b:includable>
+      <b:includable id='postHeader' var='post'>
+  <b:include name='headerByline'/>
+</b:includable>
+      <b:includable id='postMeta' var='post'>
+  <b:include data='post' name='postMetadataJSON'/>
+</b:includable>
+      <b:includable id='postPagination'>
+  <div class='blog-pager container' id='blog-pager'>
+    <b:include cond='data:newerPageUrl' name='previousPageLink'/>
+    <b:include cond='data:olderPageUrl' name='nextPageLink'/>
+    <b:include cond='data:view.url != data:blog.homepageUrl' name='homePageLink'/>
+  </div>
+</b:includable>
+      <b:includable id='postTitle' var='post'>
+  <a expr:name='data:post.id'/>
+  <b:if cond='data:post.title != &quot;&quot;'>
+    <h3 class='post-title entry-title'>
+      <b:if cond='data:post.link or (data:post.url and data:view.url != data:post.url)'>
+        <a expr:href='data:post.link ?: data:post.url'><data:post.title/></a>
+      <b:else/>
+        <data:post.title/>
+      </b:if>
+    </h3>
+  </b:if>
+</b:includable>
+      <b:includable id='previousPageLink'>
+  <a class='blog-pager-newer-link' expr:href='data:newerPageUrl' expr:id='data:widget.instanceId + &quot;_blog-pager-newer-link&quot;' expr:title='data:messages.newerPosts'>
+    <data:messages.newerPosts/>
+  </a>
+</b:includable>
+      <b:includable id='threadedCommentForm' var='post'>
+  <div class='comment-form'>
+    <a name='comment-form'/>
+    <h4 id='comment-post-message'><data:messages.postAComment/></h4>
+    <b:if cond='data:this.messages.blogComment != &quot;&quot;'>
+      <p><data:this.messages.blogComment/></p>
+    </b:if>
+    <b:include data='post' name='commentFormIframeSrc'/>
+    <iframe allowtransparency='allowtransparency' class='blogger-iframe-colorize blogger-comment-from-post' expr:height='data:cmtIframeInitialHeight ?: &quot;90px&quot;' frameborder='0' id='comment-editor' name='comment-editor' src='' width='100%'/>
+    <data:post.cmtfpIframe/>
+    <script type='text/javascript'>
+      BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;);
+    </script>
+  </div>
+</b:includable>
+      <b:includable id='threadedCommentJs' var='post'>
+  <script async='async' expr:src='data:post.commentSrc' type='text/javascript'/>
+  <b:template-script inline='true' name='threaded_comments'/>
+  <script type='text/javascript'>
+    blogger.widgets.blog.initThreadedComments(
+        <data:post.commentJso/>,
+        <data:post.commentMsgs/>,
+        <data:post.commentConfig/>);
+  </script>
+</b:includable>
+      <b:includable id='threadedComments' var='post'>
+  <section class='comments threaded' expr:data-embed='data:post.embedCommentForm' expr:data-num-comments='data:post.numberOfComments' id='comments'>
+    <a name='comments'/>
+
+    <b:include name='commentsTitle'/>
+
+    <div class='comments-content'>
+      <b:if cond='data:post.embedCommentForm'>
+        <b:include data='post' name='threadedCommentJs'/>
+      </b:if>
+      <div id='comment-holder'>
+         <data:post.commentHtml/>
+      </div>
+    </div>
+
+    <p class='comment-footer'>
+      <b:if cond='data:post.allowNewComments'>
+        <b:include data='post' name='threadedCommentForm'/>
+      <b:else/>
+        <data:post.noNewCommentsText/>
+      </b:if>
+      <b:if cond='data:post.showManageComments'>
+        <b:include data='post' name='manageComments'/>
+      </b:if>
+    </p>
+
+    <b:if cond='data:showCmtPopup'>
+      <div id='comment-popup'>
+        <iframe allowtransparency='allowtransparency' frameborder='0' id='comment-actions' name='comment-actions' scrolling='no'>
+        </iframe>
+      </div>
+    </b:if>
+  </section>
+</b:includable>
+      <b:includable id='tooltipCss'>
+  <!-- LINT.IfChange -->
+  <style>
+    .post-body a.b-tooltip-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .post-body a.b-tooltip-container .b-tooltip {
+      display: block !important;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translate(-20%, 1px);
+      visibility: hidden;
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .post-body a.b-tooltip-container .b-tooltip iframe {
+      width: 200px;
+      height: 198px;
+      max-width: none;
+      border: none;
+      border-radius: 20px;
+      box-shadow: 1px 1px 3px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (hover: hover) {
+      .post-body a.b-tooltip-container:hover .b-tooltip {
+        visibility: visible;
+        opacity: 1;
+      }
+    }
+  </style>
+  <!-- LINT.ThenChange(//depot/google3/java/com/google/blogger/b2/layouts/widgets/v2-style.css) -->
+</b:includable>
+    </b:widget>
+  </b:section>
+
+  <script type='text/javascript'>
+    //<![CDATA[
+    document.addEventListener("DOMContentLoaded", function() {
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0 || isIOS;
+      
+      const icons = {
+        play: '<svg viewBox="0 0 24 24"><path d="M8 5.14v14l11-7-11-7z"/></svg>',
+        pause: '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>',
+        volume: '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>',
+        muted: '<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>',
+        fullscreen: '<svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>',
+        settings: '<svg viewBox="0 0 24 24"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>',
+        pip: '<svg viewBox="0 0 24 24"><path d="M19 11h-8v6h8v-6zm4 8V4.98C23 3.88 22.1 3 21 3H3c-1.1 0-2 .88-2 1.98V19c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zm-2 .02H3V4.97h18v14.05z"/></svg>',
+        cc: '<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-9 10H8v1h3v1.5H6.5v-5H11V10H8V9h3v1.5h1.5V9c0-.83-.67-1.5-1.5-1.5h-3c-.83 0-1.5.67-1.5 1.5v5c0 .83.67 1.5 1.5 1.5h3c.83 0 1.5-.67 1.5-1.5v-1.5zm7 0h-3v1h3v1.5h-4.5v-5H18V10h-3V9h3v1.5h1.5V9c0-.83-.67-1.5-1.5-1.5h-3c-.83 0-1.5.67-1.5 1.5v5c0 .83.67 1.5 1.5 1.5h3c.83 0 1.5-.67 1.5-1.5v-1.5z"/></svg>',
+        audio: '<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1c0-3.87 3.13-7 7-7s7 3.13 7 7v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z"/></svg>',
+        lock: '<svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>',
+        unlock: '<svg viewBox="0 0 24 24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z"/></svg>'
+      };
+
+      const players = document.querySelectorAll('.codex-player');
+      
+      players.forEach(container => {
+        if (!isTouch) container.classList.add('cx-desktop');
+
+        const videoSrcDub = container.getAttribute('data-video-dub'); 
+        const videoSrcSub = container.getAttribute('data-video-sub'); 
+        const posterSrc = container.getAttribute('data-poster') || '';
+        
+        let cues = [];
+        let subSrc = '';
+        const inlineSubNode = container.querySelector('.cx-subtitles');
+        
+        if (inlineSubNode) {
+            let vttText = inlineSubNode.textContent || inlineSubNode.innerText || inlineSubNode.innerHTML;
+            vttText = vttText.trim().replace(/\r\n/g, '\n'); 
+            
+            if (vttText) {
+                if (isIOS) {
+                    const base64Vtt = btoa(unescape(encodeURIComponent("WEBVTT\n\n" + vttText.replace(/WEBVTT/ig, '').trim())));
+                    subSrc = 'data:text/vtt;base64,' + base64Vtt;
+                }
+
+                const lines = vttText.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].includes('-->')) {
+                        const times = lines[i].split('-->');
+                        const toSec = t => {
+                            const p = t.trim().replace(',', '.').split(':'); 
+                            if(p.length === 3) return (+p[0])*3600 + (+p[1])*60 + parseFloat(p[2]);
+                            if(p.length === 2) return (+p[0])*60 + parseFloat(p[1]);
+                            return parseFloat(p[0]) || 0;
+                        };
+                        let start = toSec(times[0]), end = toSec(times[1]);
+                        let textLines = [], j = i + 1;
+                        while (j < lines.length && lines[j].trim() !== '' && !lines[j].includes('-->')) { textLines.push(lines[j].trim()); j++; }
+                        if (textLines.length > 0) cues.push({ start: start, end: end, text: textLines.join('<br>') });
+                    }
+                }
+            }
+        }
+
+        const hasSub = cues.length > 0 || subSrc !== '';
+        const hasDualAudio = (videoSrcDub && videoSrcSub);
+
+        const vidKey = 'cx-time-' + btoa(videoSrcDub || videoSrcSub || 'blank').substring(0,12);
+        const savedTime = localStorage.getItem(vidKey) || 0;
+        const savedVolume = localStorage.getItem('cx-volume') || 1;
+        const savedSpeed = localStorage.getItem('cx-speed') || 1;
+        const savedSubPref = localStorage.getItem('cx-sub-pref') !== null ? localStorage.getItem('cx-sub-pref') : 'on';
+        
+        let currentMode = videoSrcDub ? 'dub' : 'sub';
+        if (currentMode === 'dub' && !videoSrcDub) currentMode = 'sub';
+        if (currentMode === 'sub' && !videoSrcSub) currentMode = 'dub';
+        
+        let currentSub = hasSub ? (savedSubPref === 'on') : false;
+        let initialSrc = currentMode === 'dub' ? videoSrcDub : videoSrcSub;
+        let hlsInstance = null;
+
+        let audioMenuHTML = '';
+        let audioBtnHTML = '';
+        if (hasDualAudio) {
+            audioBtnHTML = `<button class="cx-btn cx-audio-btn" data-title="Ses Seçeneği">${icons.audio}</button>`;
+            audioMenuHTML = `<div class="cx-popup-menu cx-audio-menu"><div class="cx-settings-header">Ses (Dublaj)</div><div class="cx-settings-item cx-audio-item ${currentMode==='dub'?'active':''}" data-audio="dub">Türkçe Dublaj</div><div class="cx-settings-item cx-audio-item ${currentMode==='sub'?'active':''}" data-audio="sub">Orijinal Dil</div></div>`;
+        }
+
+        let subMenuHTML = '';
+        let subBtnHTML = '';
+        if (hasSub) {
+            subBtnHTML = `<button class="cx-btn cx-sub-btn" data-title="Altyazı (CC)">${icons.cc}</button>`;
+            subMenuHTML = `<div class="cx-popup-menu cx-sub-menu"><div class="cx-settings-header">Altyazı</div><div class="cx-settings-item cx-sub-item ${!currentSub?'active':''}" data-sub="off">Kapalı</div><div class="cx-settings-item cx-sub-item ${currentSub?'active':''}" data-sub="on">Açık (Türkçe)</div></div>`;
+        }
+
+        container.className = 'codex-player-container paused';
+        container.setAttribute('tabindex', '0');
+        
+        container.innerHTML = `
+          <div class="cx-spinner"><svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="20"></circle></svg></div>
+          <video class="cx-video" poster="${posterSrc}" playsinline="true" webkit-playsinline="true"></video>
+          
+          <div class="cx-custom-sub"></div>
+          <div class="cx-overlay"></div>
+          <div class="cx-ripple cx-ripple-left"></div>
+          <div class="cx-ripple cx-ripple-right"></div>
+          <div class="cx-feedback cx-feedback-left">-10</div>
+          <div class="cx-feedback cx-feedback-right">+10</div>
+          
+          <div class="cx-center-play">${icons.play}</div>
+          
+          <button class="cx-lock-btn-top" title="Ekranı Kilitle">${icons.unlock}</button>
+          
+          ${audioMenuHTML}
+          ${subMenuHTML}
+
+          <div class="cx-popup-menu cx-settings-menu">
+             <div class="cx-settings-header">Oynatma Hızı</div>
+             <div class="cx-settings-item cx-speed-item ${savedSpeed == 0.5 ? 'active' : ''}" data-speed="0.5">0.5x Yavaş</div>
+             <div class="cx-settings-item cx-speed-item ${savedSpeed == 1 ? 'active' : ''}" data-speed="1">1x Normal</div>
+             <div class="cx-settings-item cx-speed-item ${savedSpeed == 1.5 ? 'active' : ''}" data-speed="1.5">1.5x Hızlı</div>
+             <div class="cx-settings-item cx-speed-item ${savedSpeed == 2 ? 'active' : ''}" data-speed="2">2x Çok Hızlı</div>
+             <div class="cx-settings-header cx-quality-header" style="display:none;">Çözünürlük</div>
+             <div class="cx-quality-container"></div>
+          </div>
+
+          <div class="cx-controls">
+            <div class="cx-progress-wrapper">
+              <div class="cx-hover-time">00:00</div>
+              <div class="cx-progress-container"><div class="cx-progress-bar"></div></div>
+            </div>
+            <div class="cx-buttons-row">
+              <div class="cx-left-btns">
+                <button class="cx-btn cx-play" data-title="Oynat (Space)">${icons.play}</button>
+                <div class="cx-volume-container">
+                  <button class="cx-btn cx-mute" data-title="Sesi Kapat (M)">${icons.volume}</button>
+                  <input type="range" class="cx-volume-slider" min="0" max="1" step="0.05">
+                </div>
+                <span class="cx-time">00:00 / 00:00</span>
+              </div>
+              <div class="cx-right-btns">
+                ${audioBtnHTML}
+                ${subBtnHTML}
+                <button class="cx-btn cx-pip" data-title="Küçük Ekran">${icons.pip}</button>
+                <button class="cx-btn cx-settings-btn" data-title="Ayarlar">${icons.settings}</button>
+                <button class="cx-btn cx-fullscreen" data-title="Tam Ekran (F)">${icons.fullscreen}</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const video = container.querySelector('.cx-video');
+        const overlay = container.querySelector('.cx-overlay');
+        const bottomControls = container.querySelector('.cx-controls');
+        const playBtn = container.querySelector('.cx-play');
+        const centerPlayBtn = container.querySelector('.cx-center-play');
+        const progressWrapper = container.querySelector('.cx-progress-wrapper');
+        const progressBar = container.querySelector('.cx-progress-bar');
+        const hoverTime = container.querySelector('.cx-hover-time');
+        const timeDisplay = container.querySelector('.cx-time');
+        const muteBtn = container.querySelector('.cx-mute');
+        const volumeSlider = container.querySelector('.cx-volume-slider');
+        const fullscreenBtn = container.querySelector('.cx-fullscreen');
+        const subDisplay = container.querySelector('.cx-custom-sub');
+        const pipBtn = container.querySelector('.cx-pip');
+        
+        const settingsBtn = container.querySelector('.cx-settings-btn');
+        const settingsMenu = container.querySelector('.cx-settings-menu');
+        const speedItems = container.querySelectorAll('.cx-speed-item');
+        const qualityContainer = container.querySelector('.cx-quality-container');
+        const qualityHeader = container.querySelector('.cx-quality-header');
+        
+        const audioBtn = container.querySelector('.cx-audio-btn');
+        const audioMenu = container.querySelector('.cx-audio-menu');
+        const audioItems = container.querySelectorAll('.cx-audio-item');
+        
+        const subBtn = container.querySelector('.cx-sub-btn');
+        const subMenu = container.querySelector('.cx-sub-menu');
+        const subItems = container.querySelectorAll('.cx-sub-item');
+        const lockBtn = container.querySelector('.cx-lock-btn-top');
+        
+        video.volume = savedVolume;
+        volumeSlider.value = savedVolume;
+        video.playbackRate = savedSpeed;
+        if(savedVolume == 0) muteBtn.innerHTML = icons.muted;
+        
+        let isLocked = false;
+
+        if (!document.pictureInPictureEnabled && !video.webkitSupportsPresentationMode) {
+            pipBtn.style.display = 'none';
+        }
+
+        if (isIOS && subSrc) {
+            const track = document.createElement('track');
+            track.kind = 'subtitles';
+            track.label = 'Türkçe';
+            track.srclang = 'tr';
+            track.src = subSrc;
+            track.default = false; 
+            video.appendChild(track);
+        }
+
+        const closeAllMenus = () => {
+            settingsMenu.classList.remove('open');
+            if(audioMenu) audioMenu.classList.remove('open');
+            if(subMenu) subMenu.classList.remove('open');
+        };
+
+        const updateSubtitles = () => {
+            if (isIOS && video.textTracks && video.textTracks.length > 0) {
+                video.textTracks[0].mode = currentSub ? 'showing' : 'hidden';
+            }
+        };
+
+        video.addEventListener('webkitbeginfullscreen', () => {
+            if (isIOS && currentSub && video.textTracks && video.textTracks.length > 0) {
+                video.textTracks[0].mode = 'showing';
+            }
+        });
+
+        video.addEventListener('webkitendfullscreen', () => {
+            if (isIOS && video.textTracks && video.textTracks.length > 0) {
+                video.textTracks[0].mode = 'hidden';
+            }
+        });
+
+        if (audioBtn) {
+            audioBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = audioMenu.classList.contains('open');
+                closeAllMenus();
+                if(!isOpen) audioMenu.classList.add('open');
+            });
+
+            audioItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const selectedAudio = item.getAttribute('data-audio');
+                    if (selectedAudio !== currentMode) {
+                        currentMode = selectedAudio;
+                        audioItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        const exactCurrentTime = video.currentTime;
+                        loadVideoSource(currentMode === 'dub' ? videoSrcDub : videoSrcSub, !video.paused, exactCurrentTime);
+                    }
+                    audioMenu.classList.remove('open');
+                });
+            });
+        }
+
+        if (subBtn) {
+            subBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = subMenu.classList.contains('open');
+                closeAllMenus();
+                if(!isOpen) subMenu.classList.add('open');
+            });
+
+            subItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    currentSub = (item.getAttribute('data-sub') === 'on');
+                    localStorage.setItem('cx-sub-pref', currentSub ? 'on' : 'off');
+                    subItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    updateSubtitles();
+                    if (!currentSub) subDisplay.innerHTML = '';
+                    subMenu.classList.remove('open');
+                });
+            });
+        }
+
+        const buildQualityMenu = (levels) => {
+            if(levels.length > 0 && !isIOS) {
+                qualityHeader.style.display = 'block';
+                qualityContainer.innerHTML = `<div class="cx-settings-item cx-quality-item active" data-level="-1">Oto</div>`;
+                levels.forEach((lvl, idx) => {
+                    qualityContainer.innerHTML += `<div class="cx-settings-item cx-quality-item" data-level="${idx}">${lvl.height}p</div>`;
+                });
+                const qItems = container.querySelectorAll('.cx-quality-item');
+                qItems.forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        hlsInstance.currentLevel = parseInt(item.getAttribute('data-level'));
+                        qItems.forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        settingsMenu.classList.remove('open');
+                    });
+                });
+            }
+        };
+
+        let isInitialLoad = true;
+        const loadVideoSource = (src, shouldPlay = false, resumeTime = 0) => {
+            container.classList.add('loading');
+            const speed = video.playbackRate;
+
+            const onReady = () => {
+                if (isInitialLoad) {
+                    if (savedTime > 0 && savedTime < video.duration - 5) video.currentTime = savedTime;
+                    isInitialLoad = false;
+                } else {
+                    if (resumeTime > 0) video.currentTime = resumeTime;
+                }
+                video.playbackRate = speed; 
+                updateSubtitles(); 
+                if (shouldPlay) video.play();
+            };
+
+            if (src.includes('.m3u8')) {
+                if (isIOS && video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = src; video.addEventListener('loadedmetadata', onReady, { once: true });
+                } else if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                    if (hlsInstance) hlsInstance.destroy();
+                    hlsInstance = new Hls(); hlsInstance.loadSource(src); hlsInstance.attachMedia(video);
+                    hlsInstance.on(Hls.Events.MANIFEST_PARSED, (e, data) => { buildQualityMenu(data.levels); onReady(); });
+                }
+            } else {
+                if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; qualityHeader.style.display = 'none'; qualityContainer.innerHTML = ''; }
+                video.src = src; video.load(); video.addEventListener('loadedmetadata', onReady, { once: true });
+            }
+        };
+
+        if (initialSrc) loadVideoSource(initialSrc, false, 0);
+
+        bottomControls.addEventListener('click', e => e.stopPropagation());
+        settingsMenu.addEventListener('click', e => e.stopPropagation());
+        lockBtn.addEventListener('click', e => e.stopPropagation());
+
+        const formatTime = t => { if(isNaN(t)) return "00:00"; const m = Math.floor(t/60); const s = Math.floor(t%60); return `${m<10?'0':''}${m}:${s<10?'0':''}${s}`; };
+
+        progressWrapper.addEventListener('mousemove', (e) => {
+            if (isTouch) return;
+            const rect = progressWrapper.getBoundingClientRect();
+            let pos = (e.clientX - rect.left) / rect.width;
+            pos = Math.max(0, Math.min(1, pos));
+            hoverTime.style.left = `${pos * 100}%`;
+            hoverTime.innerText = formatTime(pos * video.duration);
+        });
+
+        video.addEventListener('waiting', () => container.classList.add('loading'));
+        video.addEventListener('playing', () => container.classList.remove('loading'));
+        video.addEventListener('canplay', () => container.classList.remove('loading'));
+
+        settingsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = settingsMenu.classList.contains('open');
+            closeAllMenus();
+            if(!isOpen) settingsMenu.classList.add('open');
+        });
+
+        speedItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const speed = parseFloat(item.getAttribute('data-speed'));
+                video.playbackRate = speed;
+                localStorage.setItem('cx-speed', speed);
+                speedItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                settingsMenu.classList.remove('open');
+            });
+        });
+        
+        document.addEventListener('click', closeAllMenus);
+
+        video.addEventListener('timeupdate', () => {
+          if (!video.duration) return;
+          progressBar.style.width = `${(video.currentTime / video.duration) * 100}%`;
+          timeDisplay.innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+
+          if (video.currentTime > 5) localStorage.setItem(vidKey, video.currentTime);
+
+          if (!isIOS) {
+              if (currentSub && cues.length > 0) {
+                  const activeCue = cues.find(c => video.currentTime >= c.start && video.currentTime <= c.end);
+                  if (activeCue) {
+                      const subHTML = `<span>${activeCue.text}</span>`;
+                      if (subDisplay.innerHTML !== subHTML) subDisplay.innerHTML = subHTML;
+                  } else {
+                      if (subDisplay.innerHTML !== '') subDisplay.innerHTML = '';
+                  }
+              } else {
+                  if (subDisplay.innerHTML !== '') subDisplay.innerHTML = '';
+              }
+          }
+        });
+
+        let hideTimeout;
+        const resetHideTimer = () => { 
+            container.classList.remove('hide-controls'); 
+            if (!isTouch) {
+                clearTimeout(hideTimeout); 
+                if (!video.paused || isLocked) {
+                    hideTimeout = setTimeout(() => {
+                        container.classList.add('hide-controls');
+                        closeAllMenus();
+                    }, 3500); 
+                }
+            }
+        };
+
+        lockBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            isLocked = !isLocked;
+            if (isLocked) {
+                container.classList.add('is-locked');
+                lockBtn.innerHTML = icons.lock;
+                closeAllMenus();
+                
+                clearTimeout(hideTimeout);
+                if(isTouch) {
+                    tapTimeout = setTimeout(() => { container.classList.add('hide-controls'); }, 2500);
+                } else {
+                    hideTimeout = setTimeout(() => { container.classList.add('hide-controls'); }, 2500);
+                }
+            } else {
+                container.classList.remove('is-locked');
+                lockBtn.innerHTML = icons.unlock;
+                resetHideTimer();
+            }
+        });
+
+        const togglePlay = () => { 
+            if (video.paused) { video.play(); playBtn.innerHTML = icons.pause; playBtn.dataset.title = "Duraklat (Space)"; container.classList.remove('paused'); } 
+            else { video.pause(); playBtn.innerHTML = icons.play; playBtn.dataset.title = "Oynat (Space)"; container.classList.add('paused'); } 
+        };
+        
+        playBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); }); 
+        centerPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePlay(); if (isTouch) container.classList.add('hide-controls'); });
+
+        progressWrapper.addEventListener('click', (e) => { e.stopPropagation(); const rect = progressWrapper.getBoundingClientRect(); video.currentTime = ((e.clientX - rect.left) / rect.width) * video.duration; });
+        muteBtn.addEventListener('click', (e) => { 
+            e.stopPropagation(); video.muted = !video.muted; volumeSlider.value = video.muted ? 0 : video.volume; 
+            muteBtn.innerHTML = video.muted || video.volume === 0 ? icons.muted : icons.volume;
+            localStorage.setItem('cx-volume', volumeSlider.value);
+        });
+        volumeSlider.addEventListener('input', (e) => { 
+            e.stopPropagation(); video.volume = e.target.value; video.muted = e.target.value == 0; 
+            muteBtn.innerHTML = video.muted || video.volume === 0 ? icons.muted : icons.volume;
+            localStorage.setItem('cx-volume', video.volume);
+        });
+
+        pipBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            try {
+                if (document.pictureInPictureElement) { await document.exitPictureInPicture(); } 
+                else if (document.pictureInPictureEnabled) { await video.requestPictureInPicture(); }
+                else if (video.webkitSetPresentationMode) { 
+                    video.webkitPresentationMode === "picture-in-picture" ? video.webkitSetPresentationMode("inline") : video.webkitSetPresentationMode("picture-in-picture");
+                }
+            } catch (err) { console.error("PiP Hatası:", err); }
+        });
+
+        const toggleFullscreen = () => {
+          if (!document.fullscreenElement && !document.webkitFullscreenElement) { 
+              if (isIOS && video.webkitEnterFullscreen) { video.webkitEnterFullscreen(); } 
+              else { if (container.requestFullscreen) container.requestFullscreen().catch(err => console.log(err)); else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen(); } 
+          } else { 
+              if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); 
+          }
+        };
+        fullscreenBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFullscreen(); });
+
+        if (!isTouch) {
+            container.addEventListener('mousemove', (e) => { 
+                if (e.movementX === 0 && e.movementY === 0) return; 
+                resetHideTimer(); 
+            });
+            container.addEventListener('mouseleave', () => { 
+                if(!video.paused || isLocked) { 
+                    container.classList.add('hide-controls'); 
+                    closeAllMenus(); 
+                }
+            });
+            video.addEventListener('play', resetHideTimer); 
+            video.addEventListener('pause', () => { if(!isLocked) container.classList.remove('hide-controls'); clearTimeout(hideTimeout); });
+        }
+
+        let lastTap = 0; let tapTimeout;
+        const showFeedback = (side) => {
+            const fb = container.querySelector(`.cx-feedback-${side}`);
+            const ripple = container.querySelector(`.cx-ripple-${side}`);
+            fb.classList.add('show'); ripple.classList.add('show');
+            setTimeout(() => { fb.classList.remove('show'); ripple.classList.remove('show'); }, 400);
+        };
+
+        overlay.addEventListener('click', (e) => {
+            closeAllMenus();
+            
+            if (isLocked) {
+                container.classList.remove('hide-controls');
+                clearTimeout(hideTimeout);
+                tapTimeout = setTimeout(() => { container.classList.add('hide-controls'); }, 2500);
+                return;
+            }
+
+            if (!isTouch) { togglePlay(); return; }
+
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            
+            if (tapLength < 300 && tapLength > 0) {
+                clearTimeout(tapTimeout);
+                const rect = overlay.getBoundingClientRect();
+                if (e.clientX - rect.left < rect.width / 2) { video.currentTime -= 10; showFeedback('left'); } 
+                else { video.currentTime += 10; showFeedback('right'); }
+                container.classList.remove('hide-controls'); 
+            } 
+            else {
+                tapTimeout = setTimeout(() => { container.classList.toggle('hide-controls'); }, 250); 
+            }
+            lastTap = currentTime;
+        });
+
+        container.addEventListener('keydown', (e) => {
+            if (isLocked) return;
+            switch(e.code) {
+                case 'Space': case 'KeyK': e.preventDefault(); togglePlay(); resetHideTimer(); break;
+                case 'ArrowRight': e.preventDefault(); video.currentTime += 10; showFeedback('right'); resetHideTimer(); break;
+                case 'ArrowLeft': e.preventDefault(); video.currentTime -= 10; showFeedback('left'); resetHideTimer(); break;
+                case 'KeyF': e.preventDefault(); toggleFullscreen(); break;
+                case 'KeyM': e.preventDefault(); muteBtn.click(); break;
+            }
+        });
+
+      });
+    });
+    //]]>
+  </script>
+</body>
+</html>
